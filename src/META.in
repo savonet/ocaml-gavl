@@ -1,0 +1,6 @@
+name="gavl"
+version="@VERSION@"
+description="OCaml bindings for gavl"
+requires="@requires@"
+archive(byte)="gavl.cma"
+archive(native)="gavl.cmxa"

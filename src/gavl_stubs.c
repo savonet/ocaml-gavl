@@ -75,6 +75,19 @@ static inline int caml_gavl_plane_size(gavl_video_format_t *format, int plane)
   return height * bytes_per_line; 
 }
 
+static gavl_video_frame_t *gavl_alloc_frame(gavl_video_frame_t *f, gavl_video_format_t *vf)
+{
+  int p = gavl_pixelformat_num_planes (vf->pixelformat);
+  int i;
+  for (i = 0; i < p; i++)
+  {
+    f->planes[i] = malloc(caml_gavl_plane_size(vf,i));
+    if (f->planes[i] == NULL)
+      caml_failwith("malloc");
+  }
+  return f;
+}
+
 /* Frame here should have been initialized 
  * with the given video format ! */
 static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_t *vf, gavl_video_frame_t *f)
@@ -84,12 +97,10 @@ static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_
   struct caml_ba_array *data;
   value tmp,plane;
   gavl_pixelformat_t pf = vf->pixelformat;
-  int np = gavl_pixelformat_num_planes(pf);
-  if (np != Wosize_val(v))
-    caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
   value planes = Field(v, i++);
-  if (Wosize_val(planes) > GAVL_MAX_PLANES)
-    caml_failwith("more than GAVL_MAX_PLANES planes");
+  int np = gavl_pixelformat_num_planes(pf);
+  if (np != Wosize_val(planes))
+    caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
 
   for (j = 0; j < np; j++)
   {
@@ -99,7 +110,7 @@ static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_
     len = caml_gavl_plane_size(vf,j);
     if (data->num_dims != 1 || data->dim[0] != len)
       caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
-    memcpy(f->planes[j],data,len);
+    f->planes[j] = data->data;
     f->strides[j] = Int_val(Field(tmp,1));
   }
 
@@ -111,7 +122,8 @@ static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_
 }
 
 /* Warning: this assumes that the frame has been initialized for the corresponding
- * video format ! */
+ * video format ! 
+ * data is *not* copied. */
 static value value_of_gavl_video_frame(gavl_video_format_t *vf, gavl_video_frame_t *f)
 {
   CAMLparam0();
@@ -120,7 +132,6 @@ static value value_of_gavl_video_frame(gavl_video_format_t *vf, gavl_video_frame
   int i = 0;
   int j;
   intnat len;
-  void *data;
   gavl_pixelformat_t pf = vf->pixelformat;
   int np = gavl_pixelformat_num_planes(pf);
   planes = caml_alloc_tuple(np);
@@ -130,11 +141,7 @@ static value value_of_gavl_video_frame(gavl_video_format_t *vf, gavl_video_frame
       caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
     tmp = caml_alloc_tuple(2);
     len = caml_gavl_plane_size(vf,j);
-    data = malloc(len);
-    if (data == NULL)
-      caml_failwith("malloc");
-    p = caml_ba_alloc(CAML_BA_MANAGED|CAML_BA_C_LAYOUT|CAML_BA_UINT8,1,data,&len);
-    memcpy(data,f->planes[j],len);
+    p = caml_ba_alloc(CAML_BA_MANAGED|CAML_BA_C_LAYOUT|CAML_BA_UINT8,1,f->planes[j],&len);
     Store_field (tmp,0,p);
     Store_field (tmp,1,Val_int(f->strides[j]));
     Store_field (planes,j,tmp);
@@ -200,6 +207,7 @@ CAMLprim value caml_gavl_vid_conv_create(value old, value new)
   
   if (pass == -1)
   {
+    gavl_video_converter_destroy(conv->conv);
     free(conv);
     caml_raise_constant(*caml_named_value("caml_gavl_invalid_conversion"));
   }
@@ -225,12 +233,14 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old)
     CAMLreturn(old);
 
   gavl_video_converter_t *cnv = vid_conv->conv;
-  gavl_video_frame_t *inf = gavl_video_frame_create(&vid_conv->in_vf);
-  gavl_video_frame_t *outf = gavl_video_frame_create(&vid_conv->out_vf);
+  /* Create frames without allocating data */
+  gavl_video_frame_t *inf = gavl_video_frame_create(NULL);
+  gavl_video_frame_t *outf = gavl_video_frame_create(NULL);
   if (inf == NULL || outf == NULL)
     caml_failwith("malloc");
   int j;
-
+  /* Allocate output frame memory and fill input frame */
+  gavl_alloc_frame(outf,&vid_conv->out_vf);
   gavl_video_frame_of_value(old,&vid_conv->in_vf,inf);
 
   /* pass == 0 means no conversion is needed.. 
@@ -245,8 +255,26 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old)
 
   ret = value_of_gavl_video_frame(&vid_conv->out_vf,outf);
   
+  /* Remove data pointers from both 
+   * frames and destroy them */
+  gavl_video_frame_null(inf);
+  gavl_video_frame_null(outf);
   gavl_video_frame_destroy(inf);
   gavl_video_frame_destroy(outf);
 
+  CAMLreturn(ret);
+}
+
+CAMLprim value caml_gavl_vid_conv_new_frame(value format)
+{
+  CAMLparam1(format);
+  CAMLlocal1(ret);
+  gavl_video_format_t vf;
+  video_format_of_value(format,&vf); 
+  gavl_video_frame_t *frame = gavl_video_frame_create(NULL);
+  gavl_alloc_frame(frame,&vf);
+  ret = value_of_gavl_video_frame(&vf,frame);
+  gavl_video_frame_null(frame);
+  gavl_video_frame_destroy(frame);
   CAMLreturn(ret);
 }

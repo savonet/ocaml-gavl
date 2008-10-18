@@ -1,6 +1,6 @@
 name="gavl"
 version="@VERSION@"
 description="OCaml bindings for gavl"
-requires="@requires@"
+requires="bigarray @requires@"
 archive(byte)="gavl.cma"
 archive(native)="gavl.cmxa"

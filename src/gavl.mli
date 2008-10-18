@@ -25,13 +25,13 @@ sig
   exception Invalid_conversion
 
   type interlace_mode = 
-   | None         (* Progressive *) 
+   | No_interlace (* Progressive *) 
    | Top_first    (* Top field first *)
    | Bottom_first (* Bottom field first *)
    | Mixed        (* Use interlace_mode of the frames *)
 
   type pixel_format = 
-   | None         (* Undefined. *)
+   | No_pix_f     (* Undefined. *)
    | Gray_8       (* 8 bit gray, scaled 0x00..0xff *)
    | Gray_16      (* 16 bit gray, scaled 0x0000..0xffff *)
    | Gray_float   (* floating point gray, scaled 0.0..1.0 *)
@@ -108,11 +108,13 @@ sig
 
   type frame = 
   {
-    planes         : (plane*int) array;
-    timestamp      : Int64.t;
-    duration       : Int64.t; 
-    interlace_mode : interlace_mode
+    planes               : (plane*int) array;
+    timestamp            : Int64.t;
+    duration             : Int64.t; 
+    frame_interlace_mode : interlace_mode
   }
+
+  val new_frame : format -> frame
 
   type converter
 

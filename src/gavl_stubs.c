@@ -92,7 +92,7 @@ static inline int caml_gavl_plane_size(gavl_video_format_t *format, int plane)
   return height * bytes_per_line; 
 }
 
-static gavl_video_frame_t *gavl_alloc_frame(gavl_video_frame_t *f, gavl_video_format_t *vf)
+static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_video_format_t *vf)
 {
   int p = gavl_pixelformat_num_planes (vf->pixelformat);
   int i;
@@ -259,7 +259,7 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old)
   gavl_video_frame_t outf;
   int j;
   /* Allocate output frame memory and fill input frame */
-  gavl_alloc_frame(&outf,&vid_conv->out_vf);
+  caml_gavl_alloc_frame(&outf,&vid_conv->out_vf);
   gavl_video_frame_of_value(old,&vid_conv->in_vf,&inf);
 
   /* pass == 0 means no conversion is needed.. 
@@ -284,7 +284,7 @@ CAMLprim value caml_gavl_vid_conv_new_frame(value format)
   gavl_video_format_t vf;
   video_format_of_value(format,&vf); 
   gavl_video_frame_t frame;
-  gavl_alloc_frame(&frame,&vf);
+  caml_gavl_alloc_frame(&frame,&vf);
   ret = value_of_gavl_video_frame(&vf,&frame);
   CAMLreturn(ret);
 }

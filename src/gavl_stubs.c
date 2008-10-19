@@ -70,36 +70,31 @@ static inline int caml_gavl_bytes_per_line(gavl_video_format_t *format, int plan
 
 /* Computes the size of a plane with index i 
  * Taken from gavl's gavl_video_frame_copy_plane */
-static inline int caml_gavl_plane_size(gavl_video_format_t *format, int plane)
+static inline int caml_gavl_plane_size(gavl_video_format_t *format, int plane, int stride)
 {
-  int bytes_per_line;
   int sub_h, sub_v;
   int height = format->image_height;
   sub_h = 1;
   sub_v = 1;
 
-  bytes_per_line = gavl_pixelformat_is_planar(format->pixelformat) ?
-    format->image_width * gavl_pixelformat_bytes_per_component(format->pixelformat) :
-    format->image_width * gavl_pixelformat_bytes_per_pixel(format->pixelformat);
-
   if(plane > 0)
     {
     gavl_pixelformat_chroma_sub(format->pixelformat, &sub_h, &sub_v);
-    bytes_per_line /= sub_h;
     height /= sub_v;
     }
 
-  return height * bytes_per_line; 
+  return height * stride; 
 }
 
 static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_video_format_t *vf)
 {
   int p = gavl_pixelformat_num_planes (vf->pixelformat);
-  int i;
+  int i,len;
   for (i = 0; i < p; i++)
   {
-    f->planes[i]  = malloc(caml_gavl_plane_size(vf,i));
-    f->strides[i] = caml_gavl_bytes_per_line(vf,i);
+    len = caml_gavl_bytes_per_line(vf,i);
+    f->planes[i]  = malloc(caml_gavl_plane_size(vf,i,len));
+    f->strides[i] = len;
     if (f->planes[i] == NULL)
       caml_failwith("malloc");
   }
@@ -115,7 +110,7 @@ static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_vid
 static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_t *vf, gavl_video_frame_t *f)
 {
   int i = 0;
-  int j,len;
+  int j,len,stride;
   struct caml_ba_array *data;
   value tmp,plane;
   gavl_pixelformat_t pf = vf->pixelformat;
@@ -128,12 +123,13 @@ static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_
   {
     tmp = Field(planes,j);
     plane = Field(tmp,0);
+    stride = Int_val(Field(tmp,1));
     data = Caml_ba_array_val(plane);
-    len = caml_gavl_plane_size(vf,j);
+    len = caml_gavl_plane_size(vf,j,stride);
     if (data->num_dims != 1 || data->dim[0] != len)
       caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
     f->planes[j] = data->data;
-    f->strides[j] = Int_val(Field(tmp,1));
+    f->strides[j] = stride;
   }
 
   f->timestamp      = Int64_val(Field(v,i++));
@@ -162,7 +158,7 @@ static value value_of_gavl_video_frame(gavl_video_format_t *vf, gavl_video_frame
     if (f->planes[j] == NULL)
       caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
     tmp = caml_alloc_tuple(2);
-    len = caml_gavl_plane_size(vf,j);
+    len = caml_gavl_plane_size(vf,j,f->strides[j]);
     p = caml_ba_alloc(CAML_BA_MANAGED|CAML_BA_C_LAYOUT|CAML_BA_UINT8,1,f->planes[j],&len);
     Store_field (tmp,0,p);
     Store_field (tmp,1,Val_int(f->strides[j]));

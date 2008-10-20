@@ -23,6 +23,7 @@ sig
 
   exception Invalid_frame
   exception Invalid_conversion
+  exception No_conversion_needed
 
   type interlace_mode = 
    | No_interlace (* Progressive *) 
@@ -120,7 +121,7 @@ sig
 
   val create_converter : format -> format -> converter
 
-  val convert : converter -> frame -> frame
+  val convert : converter -> frame -> frame -> unit
 
 end
 

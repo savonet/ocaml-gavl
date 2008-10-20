@@ -238,39 +238,40 @@ CAMLprim value caml_gavl_vid_conv_create(value old, value new)
   CAMLreturn(ret);
 }
 
-CAMLprim value caml_gavl_vid_conv_convert(value conv, value old) 
+CAMLprim value caml_gavl_vid_conv_convert(value conv, value old, value new) 
 {
-  CAMLparam2(conv,old);
-  CAMLlocal1(ret);
   vid_conv_t *vid_conv = Vid_conv_val(conv);
 
   /* pass < 0 should not happen since it 
      cannot be instanciated like that..*/
   assert(vid_conv->pass >= 0);
-  if (vid_conv->pass == 0)
-    CAMLreturn(old);
 
   gavl_video_converter_t *cnv = vid_conv->conv;
   gavl_video_frame_t inf;
   gavl_video_frame_t outf;
   int j;
-  /* Allocate output frame memory and fill input frame */
-  caml_gavl_alloc_frame(&outf,&vid_conv->out_vf);
   gavl_video_frame_of_value(old,&vid_conv->in_vf,&inf);
+  gavl_video_frame_of_value(new,&vid_conv->out_vf,&outf);
 
   /* pass == 0 means no conversion is needed.. 
    * frame is copied.. */
   if (vid_conv->pass == 0)
-    CAMLreturn(value_of_gavl_video_frame(&vid_conv->in_vf,&inf));
+    caml_raise_constant(*caml_named_value("caml_gavl_no_conversion_needed"));
+
+  caml_register_global_root(&old);
+  caml_register_global_root(&new);
+  caml_register_global_root(&conv);
 
   caml_enter_blocking_section();
   for (j = 0; j < vid_conv->pass; j++)
     gavl_video_convert(cnv,&inf,&outf);
   caml_leave_blocking_section();  
 
-  ret = value_of_gavl_video_frame(&vid_conv->out_vf,&outf);
-  
-  CAMLreturn(ret);
+  caml_remove_global_root(&old);
+  caml_remove_global_root(&new);
+  caml_remove_global_root(&conv);
+
+  return Val_unit;
 }
 
 CAMLprim value caml_gavl_vid_conv_new_frame(value format)

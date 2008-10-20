@@ -35,11 +35,12 @@ let rgb =
 
 
 let () =
-  let f = new_frame yuv in
+  let inf  = new_frame yuv in
+  let outf = new_frame rgb in
   let conv = create_converter yuv rgb in
   Printf.printf "Converting 100 frames..\n"; flush_all ();
   for i = 0 to 100 do
-    ignore(convert conv f)
+    ignore(convert conv inf outf)
   done;
   Gc.full_major ()
 

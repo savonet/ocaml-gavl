@@ -23,10 +23,12 @@ struct
 
   exception Invalid_frame
   exception Invalid_conversion
+  exception No_conversion_needed
 
   let _ = 
     Callback.register_exception "caml_gavl_invalid_frame" Invalid_frame;
-    Callback.register_exception "caml_gavl_invalid_conversion" Invalid_conversion
+    Callback.register_exception "caml_gavl_invalid_conversion" Invalid_conversion;
+    Callback.register_exception "caml_gavl_no_conversion_needed" No_conversion_needed
 
   type interlace_mode = 
    | No_interlace (* Progressive *) 
@@ -164,7 +166,7 @@ struct
     create_converter (internal_format_of_format f)
                      (internal_format_of_format g)
 
-  external convert : converter -> frame -> frame = "caml_gavl_vid_conv_convert"
+  external convert : converter -> frame -> frame -> unit = "caml_gavl_vid_conv_convert" "noalloc"
 
 end
 

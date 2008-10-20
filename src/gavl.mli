@@ -104,7 +104,7 @@ sig
     interlace_mode   : interlace_mode
   }
 
-  type plane = Bigarray.int8_unsigned_elt
+  type plane = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
   type frame = 
   {

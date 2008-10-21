@@ -203,6 +203,20 @@ struct
     create_converter (internal_format_of_format f)
                      (internal_format_of_format g)
 
+  external get_quality : converter -> int = "caml_gavl_vid_conv_get_quality"
+
+  external set_quality : converter -> int -> unit = "caml_gavl_vid_conv_set_quality"
+
+  type int_rect = int*int*int*int 
+
+  type float_rect = float*float*float*float
+
+  external get_rect : converter -> float_rect*int_rect = "caml_gavl_vid_conv_get_rectangle"
+
+  external set_rect : converter -> float_rect -> int_rect -> unit = "caml_gavl_vid_conv_set_rectangle"
+
+  external reinit : converter -> unit = "caml_gavl_vid_conv_reinit"
+
   external convert : converter -> frame -> frame -> unit = "caml_gavl_vid_conv_convert" "noalloc"
 
 end

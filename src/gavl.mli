@@ -120,6 +120,20 @@ sig
 
   val create_converter : format -> format -> converter
 
+  val get_quality : converter -> int
+
+  val set_quality : converter -> int -> unit
+
+  type int_rect = int*int*int*int
+
+  type float_rect = float*float*float*float
+
+  val get_rect : converter -> float_rect*int_rect
+
+  val set_rect : converter -> float_rect -> int_rect -> unit
+
+  val reinit : converter -> unit
+
   val convert : converter -> frame -> frame -> unit
 
 end

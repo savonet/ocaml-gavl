@@ -325,8 +325,7 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old, value new)
   gavl_video_frame_of_value(old,&vid_conv->in_vf,&inf);
   gavl_video_frame_of_value(new,&vid_conv->out_vf,&outf);
 
-  /* pass == 0 means no conversion is needed.. 
-   * frame is copied.. */
+  /* pass == 0 means no conversion is needed.. */ 
   if (vid_conv->pass == 0)
     caml_raise_constant(*caml_named_value("caml_gavl_no_conversion_needed"));
 
@@ -357,3 +356,105 @@ CAMLprim value caml_gavl_vid_conv_new_frame(value format)
   ret = value_of_gavl_video_frame(&vf,&frame);
   CAMLreturn(ret);
 }
+
+static inline gavl_video_options_t *caml_gavl_vid_conv_opt(value conv)
+{
+  vid_conv_t *vid_conv = Vid_conv_val(conv);
+  return gavl_video_converter_get_options(vid_conv->conv);
+}
+
+static inline gavl_rectangle_f_t *caml_gavl_f_rect_of_val(value v, gavl_rectangle_f_t *rec)
+{
+  int i = 0;
+  rec->x = Double_val(Field(v,i++));
+  rec->y = Double_val(Field(v,i++));
+  rec->w = Double_val(Field(v,i++));
+  rec->h = Double_val(Field(v,i++));
+
+  return rec;
+}
+
+CAMLprim value caml_gavl_val_of_f_rect(gavl_rectangle_f_t *r)
+{
+  CAMLparam0();
+  CAMLlocal1(ret);
+  ret = caml_alloc_tuple(4);
+  int i = 0;
+  Store_field(ret,i++,caml_copy_double(r->x));
+  Store_field(ret,i++,caml_copy_double(r->y));
+  Store_field(ret,i++,caml_copy_double(r->w));
+  Store_field(ret,i++,caml_copy_double(r->h));
+  
+  CAMLreturn(ret);
+}
+
+static inline gavl_rectangle_i_t *caml_gavl_i_rect_of_val(value v, gavl_rectangle_i_t *rec)
+{
+  int i = 0;
+  rec->x = Int_val(Field(v,i++));
+  rec->y = Int_val(Field(v,i++));
+  rec->w = Int_val(Field(v,i++));
+  rec->h = Int_val(Field(v,i++));
+
+  return rec;
+}
+
+CAMLprim value caml_gavl_val_of_i_rect(gavl_rectangle_i_t *r)
+{
+  CAMLparam0();
+  CAMLlocal1(ret);
+  ret = caml_alloc_tuple(4);
+  int i = 0;
+  Store_field(ret, i++, Val_int(r->x));
+  Store_field(ret, i++, Val_int(r->y));
+  Store_field(ret, i++, Val_int(r->w));
+  Store_field(ret, i++, Val_int(r->h));
+
+  CAMLreturn(ret);
+}
+
+CAMLprim value caml_gavl_vid_conv_reinit(value conv)
+{
+  CAMLparam1(conv);
+  vid_conv_t *vid_conv = Vid_conv_val(conv);
+  gavl_video_converter_reinit(vid_conv->conv);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_gavl_vid_conv_set_quality(value conv, value q)
+{
+  CAMLparam1(conv);
+  gavl_video_options_set_quality(caml_gavl_vid_conv_opt(conv),Int_val(q));
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_gavl_vid_conv_get_quality(value conv)
+{
+  CAMLparam1(conv);
+  CAMLreturn(Val_int(gavl_video_options_get_quality(caml_gavl_vid_conv_opt(conv))));
+}
+
+CAMLprim value caml_gavl_vid_conv_set_rectangle(value conv, value s_rec, value d_rec)
+{
+  CAMLparam3(conv,s_rec,d_rec);
+  gavl_rectangle_f_t src;
+  gavl_rectangle_i_t dst;  
+  gavl_video_options_set_rectangles(caml_gavl_vid_conv_opt(conv),
+                                    caml_gavl_f_rect_of_val(s_rec,&src),
+                                    caml_gavl_i_rect_of_val(d_rec,&dst));
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_gavl_vid_conv_get_rectangle(value conv)
+{
+  CAMLparam1(conv);
+  CAMLlocal1(ret);
+  gavl_rectangle_f_t src;
+  gavl_rectangle_i_t dst;
+  gavl_video_options_get_rectangles(caml_gavl_vid_conv_opt(conv),&src,&dst);
+  ret = caml_alloc_tuple(2);
+  Store_field(ret,0,caml_gavl_val_of_f_rect(&src));
+  Store_field(ret,1,caml_gavl_val_of_i_rect(&dst));
+  CAMLreturn(ret);
+}
+

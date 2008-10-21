@@ -126,7 +126,13 @@ struct
     _interlace_mode   : interlace_mode
   }
 
-  external int_of_pf : pixel_format -> int = "caml_gavl_vid_format_of_index"
+  external int_of_define : string -> int = "caml_gavl_vid_int_of_define"
+
+  let int_of_pf x = 
+    match x with
+      | Rgba_32 -> int_of_define "GAVL_RGBA_32"
+      | Yuv_420_p -> int_of_define "GAVL_YUV_420_P"
+      | _ -> raise Not_found (* TODO: implement others.. *)
 
   let internal_format_of_format f = 
   {

@@ -201,10 +201,16 @@ static struct custom_operations vid_conv_ops =
   custom_deserialize_default
 };
 
-CAMLprim value caml_gavl_vid_format_of_index(value i)
+CAMLprim value caml_gavl_vid_int_of_define(value d)
 {
-  CAMLparam0();
-  CAMLreturn(Val_int(gavl_get_pixelformat(Int_val(i))));
+  CAMLparam1(d);
+  char *s = String_val(d); 
+  if (!strcmp(s,"GAVL_RGBA_32"))
+    CAMLreturn(Val_int(GAVL_RGBA_32)) ;
+  if (!strcmp(s,"GAVL_YUV_420_P"))
+    CAMLreturn(Val_int(GAVL_YUV_420_P)) ; 
+
+  caml_failwith("unknown value");
 }
 
 CAMLprim value caml_gavl_vid_conv_create(value old, value new)

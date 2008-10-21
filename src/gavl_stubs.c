@@ -205,10 +205,76 @@ CAMLprim value caml_gavl_vid_int_of_define(value d)
 {
   CAMLparam1(d);
   char *s = String_val(d); 
+  if (!strcmp(s,"GAVL_GRAY_8"))
+    CAMLreturn(Val_int(GAVL_GRAY_8)) ;
+  if (!strcmp(s,"GAVL_GRAY_16"))
+    CAMLreturn(Val_int(GAVL_GRAY_16)) ;
+  if (!strcmp(s,"GAVL_GRAY_FLOAT"))
+    CAMLreturn(Val_int(GAVL_GRAY_FLOAT)) ;
+  if (!strcmp(s,"GAVL_GRAYA_16"))
+    CAMLreturn(Val_int(GAVL_GRAYA_16)) ;
+  if (!strcmp(s,"GAVL_GRAYA_32"))
+    CAMLreturn(Val_int(GAVL_GRAYA_32)) ;
+  if (!strcmp(s,"GAVL_GRAYA_FLOAT"))
+    CAMLreturn(Val_int(GAVL_GRAYA_FLOAT)) ;
+  if (!strcmp(s,"GAVL_RGB_15"))
+    CAMLreturn(Val_int(GAVL_RGB_15)) ;
+  if (!strcmp(s,"GAVL_BGR_15"))
+    CAMLreturn(Val_int(GAVL_BGR_15)) ;
+  if (!strcmp(s,"GAVL_RGB_16"))
+    CAMLreturn(Val_int(GAVL_RGB_16)) ;
+  if (!strcmp(s,"GAVL_BGR_16"))
+    CAMLreturn(Val_int(GAVL_BGR_16)) ;
+  if (!strcmp(s,"GAVL_RGB_24"))
+    CAMLreturn(Val_int(GAVL_RGB_24)) ;
+  if (!strcmp(s,"GAVL_BGR_24"))
+    CAMLreturn(Val_int(GAVL_BGR_24)) ;
+  if (!strcmp(s,"GAVL_RGB_32"))
+    CAMLreturn(Val_int(GAVL_RGB_32)) ;
+  if (!strcmp(s,"GAVL_BGR_32"))
+    CAMLreturn(Val_int(GAVL_BGR_32)) ;
   if (!strcmp(s,"GAVL_RGBA_32"))
     CAMLreturn(Val_int(GAVL_RGBA_32)) ;
+  if (!strcmp(s,"GAVL_RGB_48"))
+    CAMLreturn(Val_int(GAVL_RGB_48)) ;
+  if (!strcmp(s,"GAVL_RGBA_64"))
+    CAMLreturn(Val_int(GAVL_RGBA_64)) ;
+  if (!strcmp(s,"GAVL_RGB_FLOAT"))
+    CAMLreturn(Val_int(GAVL_RGB_FLOAT)) ;
+  if (!strcmp(s,"GAVL_RGBA_FLOAT"))
+    CAMLreturn(Val_int(GAVL_RGBA_FLOAT)) ;
+  if (!strcmp(s,"GAVL_YUY2"))
+    CAMLreturn(Val_int(GAVL_YUY2)) ;
+  if (!strcmp(s,"GAVL_UYVY"))
+    CAMLreturn(Val_int(GAVL_UYVY)) ;
+  if (!strcmp(s,"GAVL_YUVA_32"))
+    CAMLreturn(Val_int(GAVL_YUVA_32)) ;
+  if (!strcmp(s,"GAVL_YUVA_64"))
+    CAMLreturn(Val_int(GAVL_YUVA_64)) ;
+  if (!strcmp(s,"GAVL_YUV_FLOAT"))
+    CAMLreturn(Val_int(GAVL_YUV_FLOAT)) ;
+  if (!strcmp(s,"GAVL_YUVA_FLOAT"))
+    CAMLreturn(Val_int(GAVL_YUVA_FLOAT)) ;
   if (!strcmp(s,"GAVL_YUV_420_P"))
-    CAMLreturn(Val_int(GAVL_YUV_420_P)) ; 
+    CAMLreturn(Val_int(GAVL_YUV_420_P)) ;
+  if (!strcmp(s,"GAVL_YUV_422_P"))
+    CAMLreturn(Val_int(GAVL_YUV_422_P)) ;
+  if (!strcmp(s,"GAVL_YUV_444_P"))
+    CAMLreturn(Val_int(GAVL_YUV_444_P)) ;
+  if (!strcmp(s,"GAVL_YUV_411_P"))
+    CAMLreturn(Val_int(GAVL_YUV_411_P)) ;
+  if (!strcmp(s,"GAVL_YUV_410_P"))
+    CAMLreturn(Val_int(GAVL_YUV_410_P)) ;
+  if (!strcmp(s,"GAVL_YUVJ_420_P"))
+    CAMLreturn(Val_int(GAVL_YUVJ_420_P)) ;
+  if (!strcmp(s,"GAVL_YUVJ_422_P"))
+    CAMLreturn(Val_int(GAVL_YUVJ_422_P)) ;
+  if (!strcmp(s,"GAVL_YUVJ_444_P"))
+    CAMLreturn(Val_int(GAVL_YUVJ_444_P)) ;
+  if (!strcmp(s,"GAVL_YUV_444_P_16"))
+    CAMLreturn(Val_int(GAVL_YUV_444_P_16)) ;
+  if (!strcmp(s,"GAVL_YUV_422_P_16"))
+    CAMLreturn(Val_int(GAVL_YUV_422_P_16)) ;
 
   caml_failwith("unknown value");
 }

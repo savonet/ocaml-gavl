@@ -37,7 +37,6 @@ struct
    | Mixed        (* Use interlace_mode of the frames *)
 
   type pixel_format = 
-   | No_pix_f     (* Undefined. *)
    | Gray_8       (* 8 bit gray, scaled 0x00..0xff *)
    | Gray_16      (* 16 bit gray, scaled 0x0000..0xffff *)
    | Gray_float   (* floating point gray, scaled 0.0..1.0 *)
@@ -130,9 +129,41 @@ struct
 
   let int_of_pf x = 
     match x with
-      | Rgba_32 -> int_of_define "GAVL_RGBA_32"
-      | Yuv_420_p -> int_of_define "GAVL_YUV_420_P"
-      | _ -> raise Not_found (* TODO: implement others.. *)
+      | Gray_8       -> int_of_define "GAVL_GRAY_8"
+      | Gray_16      -> int_of_define "GAVL_GRAY_16"
+      | Gray_float   -> int_of_define "GAVL_GRAY_FLOAT"
+      | Graya_16     -> int_of_define "GAVL_GRAYA_16"
+      | Graya_32     -> int_of_define "GAVL_GRAYA_32"
+      | Graya_float  -> int_of_define "GAVL_GRAYA_FLOAT"
+      | Rgb_15       -> int_of_define "GAVL_RGB_15"
+      | Bgr_15       -> int_of_define "GAVL_BGR_15"
+      | Rgb_16       -> int_of_define "GAVL_RGB_16"
+      | Bgr_16       -> int_of_define "GAVL_BGR_16"
+      | Rgb_24       -> int_of_define "GAVL_RGB_24"
+      | Bgr_24       -> int_of_define "GAVL_BGR_24"
+      | Rgb_32       -> int_of_define "GAVL_RGB_32"
+      | Bgr_32       -> int_of_define "GAVL_BGR_32"
+      | Rgba_32      -> int_of_define "GAVL_RGBA_32"
+      | Rgb_48       -> int_of_define "GAVL_RGB_48"
+      | Rgba_64      -> int_of_define "GAVL_RGBA_64"
+      | Rgb_float    -> int_of_define "GAVL_RGB_FLOAT"
+      | Rgba_float   -> int_of_define "GAVL_RGBA_FLOAT"
+      | Yuy2         -> int_of_define "GAVL_YUY2"
+      | Yuvy         -> int_of_define "GAVL_UYVY"
+      | Yuva_32      -> int_of_define "GAVL_YUVA_32"
+      | Yuva_64      -> int_of_define "GAVL_YUVA_64"
+      | Yuv_float    -> int_of_define "GAVL_YUV_FLOAT"
+      | Yuva_float   -> int_of_define "GAVL_YUVA_FLOAT"
+      | Yuv_420_p    -> int_of_define "GAVL_YUV_420_P"
+      | Yuv_422_p    -> int_of_define "GAVL_YUV_422_P"
+      | Yuv_444_p    -> int_of_define "GAVL_YUV_444_P"
+      | Yuv_411_p    -> int_of_define "GAVL_YUV_411_P"
+      | Yuv_410_p    -> int_of_define "GAVL_YUV_410_P"
+      | Yuvj_420_p   -> int_of_define "GAVL_YUVJ_420_P"
+      | Yuvj_422_p   -> int_of_define "GAVL_YUVJ_422_P"
+      | Yuvj_444_p   -> int_of_define "GAVL_YUVJ_444_P"
+      | Yuv_444_p_16 -> int_of_define "GAVL_YUV_444_P_16"
+      | Yuv_422_p_16 -> int_of_define "GAVL_YUV_422_P_16"
 
   let internal_format_of_format f = 
   {

@@ -32,7 +32,6 @@ sig
    | Mixed        (* Use interlace_mode of the frames *)
 
   type pixel_format = 
-   | No_pix_f     (* Undefined. *)
    | Gray_8       (* 8 bit gray, scaled 0x00..0xff *)
    | Gray_16      (* 16 bit gray, scaled 0x0000..0xffff *)
    | Gray_float   (* floating point gray, scaled 0.0..1.0 *)

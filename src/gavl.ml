@@ -203,6 +203,14 @@ struct
     create_converter (internal_format_of_format f)
                      (internal_format_of_format g)
 
+  external init : converter -> internal_format -> internal_format -> unit = "caml_gavl_vid_conv_init"
+
+  let init c f g = 
+    init c (internal_format_of_format f)
+           (internal_format_of_format g)
+
+  external get_formats : converter -> format*format = "caml_gavl_vid_conv_get_formats"
+
   external get_quality : converter -> int = "caml_gavl_vid_conv_get_quality"
 
   external set_quality : converter -> int -> unit = "caml_gavl_vid_conv_set_quality"

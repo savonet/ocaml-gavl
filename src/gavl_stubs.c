@@ -32,7 +32,202 @@
 
 /* Video conversion */
 
-static gavl_video_format_t *video_format_of_value(value v, gavl_video_format_t *format)
+CAMLprim value caml_gavl_vid_int_of_define(value d)
+{
+  CAMLparam1(d);
+  char *s = String_val(d); 
+  if (!strcmp(s,"GAVL_GRAY_8"))
+    CAMLreturn(Val_int(GAVL_GRAY_8)) ;
+  if (!strcmp(s,"GAVL_GRAY_16"))
+    CAMLreturn(Val_int(GAVL_GRAY_16)) ;
+  if (!strcmp(s,"GAVL_GRAY_FLOAT"))
+    CAMLreturn(Val_int(GAVL_GRAY_FLOAT)) ;
+  if (!strcmp(s,"GAVL_GRAYA_16"))
+    CAMLreturn(Val_int(GAVL_GRAYA_16)) ;
+  if (!strcmp(s,"GAVL_GRAYA_32"))
+    CAMLreturn(Val_int(GAVL_GRAYA_32)) ;
+  if (!strcmp(s,"GAVL_GRAYA_FLOAT"))
+    CAMLreturn(Val_int(GAVL_GRAYA_FLOAT)) ;
+  if (!strcmp(s,"GAVL_RGB_15"))
+    CAMLreturn(Val_int(GAVL_RGB_15)) ;
+  if (!strcmp(s,"GAVL_BGR_15"))
+    CAMLreturn(Val_int(GAVL_BGR_15)) ;
+  if (!strcmp(s,"GAVL_RGB_16"))
+    CAMLreturn(Val_int(GAVL_RGB_16)) ;
+  if (!strcmp(s,"GAVL_BGR_16"))
+    CAMLreturn(Val_int(GAVL_BGR_16)) ;
+  if (!strcmp(s,"GAVL_RGB_24"))
+    CAMLreturn(Val_int(GAVL_RGB_24)) ;
+  if (!strcmp(s,"GAVL_BGR_24"))
+    CAMLreturn(Val_int(GAVL_BGR_24)) ;
+  if (!strcmp(s,"GAVL_RGB_32"))
+    CAMLreturn(Val_int(GAVL_RGB_32)) ;
+  if (!strcmp(s,"GAVL_BGR_32"))
+    CAMLreturn(Val_int(GAVL_BGR_32)) ;
+  if (!strcmp(s,"GAVL_RGBA_32"))
+    CAMLreturn(Val_int(GAVL_RGBA_32)) ;
+  if (!strcmp(s,"GAVL_RGB_48"))
+    CAMLreturn(Val_int(GAVL_RGB_48)) ;
+  if (!strcmp(s,"GAVL_RGBA_64"))
+    CAMLreturn(Val_int(GAVL_RGBA_64)) ;
+  if (!strcmp(s,"GAVL_RGB_FLOAT"))
+    CAMLreturn(Val_int(GAVL_RGB_FLOAT)) ;
+  if (!strcmp(s,"GAVL_RGBA_FLOAT"))
+    CAMLreturn(Val_int(GAVL_RGBA_FLOAT)) ;
+  if (!strcmp(s,"GAVL_YUY2"))
+    CAMLreturn(Val_int(GAVL_YUY2)) ;
+  if (!strcmp(s,"GAVL_UYVY"))
+    CAMLreturn(Val_int(GAVL_UYVY)) ;
+  if (!strcmp(s,"GAVL_YUVA_32"))
+    CAMLreturn(Val_int(GAVL_YUVA_32)) ;
+  if (!strcmp(s,"GAVL_YUVA_64"))
+    CAMLreturn(Val_int(GAVL_YUVA_64)) ;
+  if (!strcmp(s,"GAVL_YUV_FLOAT"))
+    CAMLreturn(Val_int(GAVL_YUV_FLOAT)) ;
+  if (!strcmp(s,"GAVL_YUVA_FLOAT"))
+    CAMLreturn(Val_int(GAVL_YUVA_FLOAT)) ;
+  if (!strcmp(s,"GAVL_YUV_420_P"))
+    CAMLreturn(Val_int(GAVL_YUV_420_P)) ;
+  if (!strcmp(s,"GAVL_YUV_422_P"))
+    CAMLreturn(Val_int(GAVL_YUV_422_P)) ;
+  if (!strcmp(s,"GAVL_YUV_444_P"))
+    CAMLreturn(Val_int(GAVL_YUV_444_P)) ;
+  if (!strcmp(s,"GAVL_YUV_411_P"))
+    CAMLreturn(Val_int(GAVL_YUV_411_P)) ;
+  if (!strcmp(s,"GAVL_YUV_410_P"))
+    CAMLreturn(Val_int(GAVL_YUV_410_P)) ;
+  if (!strcmp(s,"GAVL_YUVJ_420_P"))
+    CAMLreturn(Val_int(GAVL_YUVJ_420_P)) ;
+  if (!strcmp(s,"GAVL_YUVJ_422_P"))
+    CAMLreturn(Val_int(GAVL_YUVJ_422_P)) ;
+  if (!strcmp(s,"GAVL_YUVJ_444_P"))
+    CAMLreturn(Val_int(GAVL_YUVJ_444_P)) ;
+  if (!strcmp(s,"GAVL_YUV_444_P_16"))
+    CAMLreturn(Val_int(GAVL_YUV_444_P_16)) ;
+  if (!strcmp(s,"GAVL_YUV_422_P_16"))
+    CAMLreturn(Val_int(GAVL_YUV_422_P_16)) ;
+
+  caml_failwith("unknown value");
+}
+
+static inline int caml_gavl_index_of_format(int pixelformat)
+{
+  int i = -1;
+  switch (pixelformat) {
+      case GAVL_GRAY_8: 
+        i = 0;
+        break;
+      case GAVL_GRAY_16: 
+        i = 1;
+        break;
+      case GAVL_GRAY_FLOAT: 
+        i = 2;
+        break;
+      case GAVL_GRAYA_16: 
+        i = 3;
+        break;
+      case GAVL_GRAYA_32: 
+        i = 4;
+        break;
+      case GAVL_GRAYA_FLOAT: 
+        i = 5;
+        break;
+      case GAVL_RGB_15: 
+        i = 6;
+        break;
+      case GAVL_BGR_15: 
+        i = 7;
+        break;
+      case GAVL_RGB_16: 
+        i = 8;
+        break;
+      case GAVL_BGR_16: 
+        i = 9;
+        break;
+      case GAVL_RGB_24: 
+        i = 10;
+        break;
+      case GAVL_BGR_24: 
+        i = 11;
+        break;
+      case GAVL_RGB_32: 
+        i = 12;
+        break;
+      case GAVL_BGR_32: 
+        i = 13;
+        break;
+      case GAVL_RGBA_32: 
+        i = 14;
+        break;
+      case GAVL_RGB_48: 
+        i = 15;
+        break;
+      case GAVL_RGBA_64: 
+        i = 16;
+        break;
+      case GAVL_RGB_FLOAT: 
+        i = 17;
+        break;
+      case GAVL_RGBA_FLOAT: 
+        i = 18;
+        break;
+      case GAVL_YUY2: 
+        i = 19;
+        break;
+      case GAVL_UYVY: 
+        i = 20;
+        break;
+      case GAVL_YUVA_32: 
+        i = 21;
+        break;
+      case GAVL_YUVA_64: 
+        i = 22;
+        break;
+      case GAVL_YUV_FLOAT: 
+        i = 23;
+        break;
+      case GAVL_YUVA_FLOAT: 
+        i = 24;
+        break;
+      case GAVL_YUV_420_P: 
+        i = 25;
+        break;
+      case GAVL_YUV_422_P: 
+        i = 26;
+        break;
+      case GAVL_YUV_444_P: 
+        i = 27;
+        break;
+      case GAVL_YUV_411_P: 
+        i = 28;
+        break;
+      case GAVL_YUV_410_P: 
+        i = 29;
+        break;
+      case GAVL_YUVJ_420_P: 
+        i = 30;
+        break;
+      case GAVL_YUVJ_422_P: 
+        i = 31;
+        break;
+      case GAVL_YUVJ_444_P: 
+        i = 32;
+        break;
+      case GAVL_YUV_444_P_16: 
+        i = 33;
+        break;
+      case GAVL_YUV_422_P_16: 
+        i = 34;
+        break;
+  }
+
+  if (i == -1)
+    caml_failwith("Unknown pixelformat");
+
+  return i;
+}
+
+static inline gavl_video_format_t *video_format_of_value(value v, gavl_video_format_t *format)
 {
   int i = 0;
   format->frame_width      = Int_val(Field(v, i++));
@@ -49,6 +244,28 @@ static gavl_video_format_t *video_format_of_value(value v, gavl_video_format_t *
   format->interlace_mode   = Int_val(Field(v, i++));
 
   return format;
+}
+
+static value value_of_format(gavl_video_format_t *format)
+{
+  CAMLparam0();
+  CAMLlocal1(ret);
+  ret = caml_alloc_tuple(12);
+  int i = 0;
+  Store_field(ret,i++,Val_int(format->frame_width));
+  Store_field(ret,i++,Val_int(format->frame_height));
+  Store_field(ret,i++,Val_int(format->image_width));
+  Store_field(ret,i++,Val_int(format->image_height));
+  Store_field(ret,i++,Val_int(format->pixel_width));
+  Store_field(ret,i++,Val_int(format->pixel_height));
+  Store_field(ret,i++,Val_int(caml_gavl_index_of_format(format->pixelformat)));
+  Store_field(ret,i++,Val_int(format->frame_duration));
+  Store_field(ret,i++,Val_int(format->timescale));
+  Store_field(ret,i++,Val_int(format->framerate_mode));
+  Store_field(ret,i++,Val_int(format->chroma_placement));
+  Store_field(ret,i++,Val_int(format->interlace_mode));
+
+  CAMLreturn(ret);
 }
 
 static inline int caml_gavl_bytes_per_line(gavl_video_format_t *format, int plane)
@@ -201,84 +418,6 @@ static struct custom_operations vid_conv_ops =
   custom_deserialize_default
 };
 
-CAMLprim value caml_gavl_vid_int_of_define(value d)
-{
-  CAMLparam1(d);
-  char *s = String_val(d); 
-  if (!strcmp(s,"GAVL_GRAY_8"))
-    CAMLreturn(Val_int(GAVL_GRAY_8)) ;
-  if (!strcmp(s,"GAVL_GRAY_16"))
-    CAMLreturn(Val_int(GAVL_GRAY_16)) ;
-  if (!strcmp(s,"GAVL_GRAY_FLOAT"))
-    CAMLreturn(Val_int(GAVL_GRAY_FLOAT)) ;
-  if (!strcmp(s,"GAVL_GRAYA_16"))
-    CAMLreturn(Val_int(GAVL_GRAYA_16)) ;
-  if (!strcmp(s,"GAVL_GRAYA_32"))
-    CAMLreturn(Val_int(GAVL_GRAYA_32)) ;
-  if (!strcmp(s,"GAVL_GRAYA_FLOAT"))
-    CAMLreturn(Val_int(GAVL_GRAYA_FLOAT)) ;
-  if (!strcmp(s,"GAVL_RGB_15"))
-    CAMLreturn(Val_int(GAVL_RGB_15)) ;
-  if (!strcmp(s,"GAVL_BGR_15"))
-    CAMLreturn(Val_int(GAVL_BGR_15)) ;
-  if (!strcmp(s,"GAVL_RGB_16"))
-    CAMLreturn(Val_int(GAVL_RGB_16)) ;
-  if (!strcmp(s,"GAVL_BGR_16"))
-    CAMLreturn(Val_int(GAVL_BGR_16)) ;
-  if (!strcmp(s,"GAVL_RGB_24"))
-    CAMLreturn(Val_int(GAVL_RGB_24)) ;
-  if (!strcmp(s,"GAVL_BGR_24"))
-    CAMLreturn(Val_int(GAVL_BGR_24)) ;
-  if (!strcmp(s,"GAVL_RGB_32"))
-    CAMLreturn(Val_int(GAVL_RGB_32)) ;
-  if (!strcmp(s,"GAVL_BGR_32"))
-    CAMLreturn(Val_int(GAVL_BGR_32)) ;
-  if (!strcmp(s,"GAVL_RGBA_32"))
-    CAMLreturn(Val_int(GAVL_RGBA_32)) ;
-  if (!strcmp(s,"GAVL_RGB_48"))
-    CAMLreturn(Val_int(GAVL_RGB_48)) ;
-  if (!strcmp(s,"GAVL_RGBA_64"))
-    CAMLreturn(Val_int(GAVL_RGBA_64)) ;
-  if (!strcmp(s,"GAVL_RGB_FLOAT"))
-    CAMLreturn(Val_int(GAVL_RGB_FLOAT)) ;
-  if (!strcmp(s,"GAVL_RGBA_FLOAT"))
-    CAMLreturn(Val_int(GAVL_RGBA_FLOAT)) ;
-  if (!strcmp(s,"GAVL_YUY2"))
-    CAMLreturn(Val_int(GAVL_YUY2)) ;
-  if (!strcmp(s,"GAVL_UYVY"))
-    CAMLreturn(Val_int(GAVL_UYVY)) ;
-  if (!strcmp(s,"GAVL_YUVA_32"))
-    CAMLreturn(Val_int(GAVL_YUVA_32)) ;
-  if (!strcmp(s,"GAVL_YUVA_64"))
-    CAMLreturn(Val_int(GAVL_YUVA_64)) ;
-  if (!strcmp(s,"GAVL_YUV_FLOAT"))
-    CAMLreturn(Val_int(GAVL_YUV_FLOAT)) ;
-  if (!strcmp(s,"GAVL_YUVA_FLOAT"))
-    CAMLreturn(Val_int(GAVL_YUVA_FLOAT)) ;
-  if (!strcmp(s,"GAVL_YUV_420_P"))
-    CAMLreturn(Val_int(GAVL_YUV_420_P)) ;
-  if (!strcmp(s,"GAVL_YUV_422_P"))
-    CAMLreturn(Val_int(GAVL_YUV_422_P)) ;
-  if (!strcmp(s,"GAVL_YUV_444_P"))
-    CAMLreturn(Val_int(GAVL_YUV_444_P)) ;
-  if (!strcmp(s,"GAVL_YUV_411_P"))
-    CAMLreturn(Val_int(GAVL_YUV_411_P)) ;
-  if (!strcmp(s,"GAVL_YUV_410_P"))
-    CAMLreturn(Val_int(GAVL_YUV_410_P)) ;
-  if (!strcmp(s,"GAVL_YUVJ_420_P"))
-    CAMLreturn(Val_int(GAVL_YUVJ_420_P)) ;
-  if (!strcmp(s,"GAVL_YUVJ_422_P"))
-    CAMLreturn(Val_int(GAVL_YUVJ_422_P)) ;
-  if (!strcmp(s,"GAVL_YUVJ_444_P"))
-    CAMLreturn(Val_int(GAVL_YUVJ_444_P)) ;
-  if (!strcmp(s,"GAVL_YUV_444_P_16"))
-    CAMLreturn(Val_int(GAVL_YUV_444_P_16)) ;
-  if (!strcmp(s,"GAVL_YUV_422_P_16"))
-    CAMLreturn(Val_int(GAVL_YUV_422_P_16)) ;
-
-  caml_failwith("unknown value");
-}
-
 CAMLprim value caml_gavl_vid_conv_create(value old, value new)
 {
   CAMLparam0();
@@ -306,6 +445,32 @@ CAMLprim value caml_gavl_vid_conv_create(value old, value new)
 
   ret = caml_alloc_custom(&vid_conv_ops, sizeof(vid_conv_t *), 1, 0);
   Vid_conv_val(ret) = conv;
+
+  CAMLreturn(ret);
+}
+
+CAMLprim value caml_gavl_vid_conv_init(value conv, value old, value new)
+{
+  CAMLparam1(conv);
+  vid_conv_t *vid_conv = Vid_conv_val(conv);
+  video_format_of_value(old,&vid_conv->in_vf);
+  video_format_of_value(new,&vid_conv->out_vf);
+  int pass = gavl_video_converter_init(vid_conv->conv,&vid_conv->in_vf,&vid_conv->out_vf);
+
+  if (pass == -1)
+    caml_raise_constant(*caml_named_value("caml_gavl_invalid_conversion"));
+  
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_gavl_vid_conv_get_formats(value conv)
+{
+  CAMLparam1(conv);
+  CAMLlocal1(ret);
+  vid_conv_t *vid_conv = Vid_conv_val(conv);
+  ret = caml_alloc_tuple(2);
+  Store_field(ret,0,value_of_format(&vid_conv->in_vf));
+  Store_field(ret,1,value_of_format(&vid_conv->out_vf));
 
   CAMLreturn(ret);
 }

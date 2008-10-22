@@ -120,6 +120,10 @@ sig
 
   val create_converter : format -> format -> converter
 
+  val init : converter -> format -> format -> unit
+
+  val get_formats : converter -> format*format
+
   val get_quality : converter -> int
 
   val set_quality : converter -> int -> unit

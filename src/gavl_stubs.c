@@ -106,6 +106,31 @@ CAMLprim value caml_gavl_vid_int_of_define(value d)
     CAMLreturn(Val_int(GAVL_YUV_444_P_16)) ;
   if (!strcmp(s,"GAVL_YUV_422_P_16"))
     CAMLreturn(Val_int(GAVL_YUV_422_P_16)) ;
+  if (!strcmp(s,"GAVL_FORCE_DEINTERLACE"))
+    CAMLreturn(Val_int(GAVL_FORCE_DEINTERLACE)) ;
+  if (!strcmp(s,"GAVL_CONVOLVE_CHROMA"))
+    CAMLreturn(Val_int(GAVL_CONVOLVE_CHROMA)) ;
+  if (!strcmp(s,"GAVL_CONVOLVE_NORMALIZE "))
+    CAMLreturn(Val_int(GAVL_CONVOLVE_NORMALIZE )) ;
+  if (!strcmp(s,"GAVL_RESAMPLE_CHROMA"))
+    CAMLreturn(Val_int(GAVL_RESAMPLE_CHROMA)) ;
+  if (!strcmp(s,"GAVL_SCALE_AUTO"))
+    CAMLreturn(Val_int(GAVL_SCALE_AUTO)) ;
+  if (!strcmp(s,"GAVL_SCALE_QUADRATIC"))
+    CAMLreturn(Val_int(GAVL_SCALE_QUADRATIC)) ;
+  if (!strcmp(s,"GAVL_SCALE_NEAREST"))
+    CAMLreturn(Val_int(GAVL_SCALE_NEAREST)) ;
+  if (!strcmp(s,"GAVL_SCALE_BILINEAR"))
+    CAMLreturn(Val_int(GAVL_SCALE_BILINEAR)) ;
+  if (!strcmp(s,"GAVL_SCALE_CUBIC_BSPLINE"))
+    CAMLreturn(Val_int(GAVL_SCALE_CUBIC_BSPLINE)) ;
+  if (!strcmp(s,"GAVL_SCALE_CUBIC_MITCHELL"))
+    CAMLreturn(Val_int(GAVL_SCALE_CUBIC_MITCHELL)) ;
+  if (!strcmp(s,"GAVL_SCALE_CUBIC_CATMULL"))
+    CAMLreturn(Val_int(GAVL_SCALE_CUBIC_CATMULL)) ;
+  if (!strcmp(s,"GAVL_SCALE_SINC_LANCZOS"))
+    CAMLreturn(Val_int(GAVL_SCALE_SINC_LANCZOS)) ;
+
 
   caml_failwith("unknown value");
 }
@@ -621,5 +646,33 @@ CAMLprim value caml_gavl_vid_conv_get_rectangle(value conv)
   Store_field(ret,0,caml_gavl_val_of_f_rect(&src));
   Store_field(ret,1,caml_gavl_val_of_i_rect(&dst));
   CAMLreturn(ret);
+}
+
+CAMLprim value caml_gavl_vid_conv_set_flags(value conv, value flags)
+{
+  CAMLparam1(conv);
+  gavl_video_options_set_conversion_flags(caml_gavl_vid_conv_opt(conv),
+                                          Int_val(flags));
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_gavl_vid_conv_get_flags(value conv)
+{
+  CAMLparam1(conv);
+  CAMLreturn(Val_int(gavl_video_options_get_conversion_flags(caml_gavl_vid_conv_opt(conv))));
+}
+
+CAMLprim value caml_gavl_vid_conv_set_scale_mode(value conv, value mode)
+{
+  CAMLparam1(conv);
+  gavl_video_options_set_scale_mode(caml_gavl_vid_conv_opt(conv),
+                                          Int_val(mode));
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_gavl_vid_conv_get_scale_mode(value conv)
+{
+  CAMLparam1(conv);
+  CAMLreturn(Val_int(gavl_video_options_get_scale_mode(caml_gavl_vid_conv_opt(conv))));
 }
 

@@ -223,6 +223,94 @@ struct
 
   external set_rect : converter -> float_rect -> int_rect -> unit = "caml_gavl_vid_conv_set_rectangle"
 
+  type conversion_flags = [
+    | `Force_deinterlace
+    | `Convolve_chroma
+    | `Convolve_normalize
+    | `Resample_chroma
+  ]
+
+  let int_of_conversion_flag x =
+    match x with
+      | `Force_deinterlace -> int_of_define "GAVL_FORCE_DEINTERLACE"
+      | `Convolve_chroma -> int_of_define "GAVL_CONVOLVE_CHROMA"
+      | `Convolve_normalize -> int_of_define "GAVL_CONVOLVE_NORMALIZE"
+      | `Resample_chroma -> int_of_define "GAVL_RESAMPLE_CHROMA"
+
+  let flags_of_conversion_flags l =
+    let f x y = 
+      let y = int_of_conversion_flag y in
+      x lor y
+    in
+    List.fold_left f 0 l 
+
+  external set_flags : converter -> int -> unit = "caml_gavl_vid_conv_set_flags"
+
+  let set_flags c l = 
+    set_flags c (flags_of_conversion_flags l)
+
+  external get_flags : converter -> int = "caml_gavl_vid_conv_get_flags"
+
+  let get_flags c = 
+    let ret = get_flags c in
+    let flags = [`Force_deinterlace;`Convolve_chroma;
+                 `Convolve_normalize;`Resample_chroma]
+    in
+    let test_flag l f = 
+      if ret land (int_of_conversion_flag f) <> 0 then
+        f::l
+      else
+        l
+    in
+    List.fold_left test_flag [] flags
+
+  type scale_mode = 
+    | Auto
+    | Nearest
+    | Bilinear
+    | Quadratic
+    | Cubic_bspline
+    | Cubic_mitchell
+    | Cubic_catmull
+    | Scale_sinc_lanczos
+
+  let int_of_scale_mode x = 
+    match x with
+      | Auto -> int_of_define "GAVL_SCALE_AUTO"
+      | Nearest -> int_of_define "GAVL_SCALE_NEAREST"
+      | Bilinear -> int_of_define "GAVL_SCALE_BILINEAR"
+      | Quadratic -> int_of_define "GAVL_SCALE_QUADRATIC"
+      | Cubic_bspline -> int_of_define "GAVL_SCALE_CUBIC_BSPLINE"
+      | Cubic_mitchell -> int_of_define "GAVL_SCALE_CUBIC_MITCHELL"
+      | Cubic_catmull -> int_of_define "GAVL_SCALE_CUBIC_CATMULL"
+      | Scale_sinc_lanczos -> int_of_define "GAVL_SCALE_SINC_LANCZOS"
+
+  external set_scale_mode : converter -> int -> unit = "caml_gavl_vid_conv_set_scale_mode"
+
+  let set_scale_mode c m = 
+    set_scale_mode c (int_of_scale_mode m)
+
+  external get_scale_mode : converter -> int = "caml_gavl_vid_conv_get_scale_mode"
+
+  exception Internal of scale_mode
+
+  let get_scale_mode c = 
+    let ret = get_scale_mode c in
+    let modes = [
+      Auto;Nearest;Bilinear;Quadratic;
+      Cubic_bspline;Cubic_mitchell;
+      Cubic_catmull;Scale_sinc_lanczos]
+    in
+    let f m = 
+      if ret = int_of_scale_mode m then
+        raise (Internal m)
+    in
+    try
+      List.iter f modes;
+      assert(false);
+    with
+      | Internal m -> m
+
   external reinit : converter -> unit = "caml_gavl_vid_conv_reinit"
 
   external convert : converter -> frame -> frame -> unit = "caml_gavl_vid_conv_convert" "noalloc"

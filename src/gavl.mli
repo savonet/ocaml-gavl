@@ -136,6 +136,31 @@ sig
 
   val set_rect : converter -> float_rect -> int_rect -> unit
 
+  type conversion_flags = [
+    | `Force_deinterlace
+    | `Convolve_chroma
+    | `Convolve_normalize
+    | `Resample_chroma 
+  ]
+
+  val set_flags : converter -> conversion_flags list -> unit
+
+  val get_flags : converter -> conversion_flags list
+
+  type scale_mode =
+    | Auto
+    | Nearest
+    | Bilinear
+    | Quadratic
+    | Cubic_bspline
+    | Cubic_mitchell
+    | Cubic_catmull
+    | Scale_sinc_lanczos
+
+  val set_scale_mode : converter -> scale_mode -> unit
+
+  val get_scale_mode : converter -> scale_mode
+
   val reinit : converter -> unit
 
   val convert : converter -> frame -> frame -> unit

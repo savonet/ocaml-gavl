@@ -24,6 +24,7 @@ struct
   exception Invalid_frame
   exception Invalid_conversion
   exception No_conversion_needed
+  exception Not_implemented
 
   let _ = 
     Callback.register_exception "caml_gavl_invalid_frame" Invalid_frame;
@@ -82,6 +83,34 @@ struct
                    * luma and chroma values are full range (0x00 .. 0xff) *)
    | Yuv_444_p_16 (* 16 bit Planar YCbCr 4:4:4. Each component is an uint16_t in native byte order. *)
    | Yuv_422_p_16 (* 16 bit Planar YCbCr 4:2:2. Each component is an uint16_t in native byte order. *)
+
+  let is_float f =
+    match f with
+      | Gray_float
+      | Graya_float
+      | Rgb_float
+      | Rgba_float
+      | Yuv_float
+      | Yuva_float -> true
+      | _ -> false
+
+  let is_int16 f =
+    match f with
+      | Gray_16
+      | Graya_32
+      | Rgb_15
+      | Bgr_15
+      | Rgb_16
+      | Bgr_16
+      | Rgb_48
+      | Rgba_64
+      | Yuva_64
+      | Yuv_420_p
+      | Yuv_444_p_16
+      | Yuv_422_p_16 -> true
+      | _ -> false
+
+  let is_int8 f = not (is_float f) && not (is_int16 f)
 
   type framerate_mode = 
    | Constant  (* Constant framerate *)
@@ -165,7 +194,9 @@ struct
       | Yuv_444_p_16 -> int_of_define "GAVL_YUV_444_P_16"
       | Yuv_422_p_16 -> int_of_define "GAVL_YUV_422_P_16"
 
-  let internal_format_of_format f = 
+  let internal_format_of_format f =
+  if not (is_int8 f.pixelformat) then
+    raise Not_implemented; 
   {
     _frame_width      = f.frame_width;
     _frame_height     = f.frame_height;
@@ -195,33 +226,33 @@ struct
 
   let new_frame f = new_frame (internal_format_of_format f)
 
-  type converter
+  type t
 
-  external create_converter : internal_format -> internal_format -> converter = "caml_gavl_vid_conv_create"
+  external create_converter : internal_format -> internal_format -> t = "caml_gavl_vid_conv_create"
 
   let create_converter f g = 
     create_converter (internal_format_of_format f)
                      (internal_format_of_format g)
 
-  external init : converter -> internal_format -> internal_format -> unit = "caml_gavl_vid_conv_init"
+  external init : t -> internal_format -> internal_format -> unit = "caml_gavl_vid_conv_init"
 
   let init c f g = 
     init c (internal_format_of_format f)
            (internal_format_of_format g)
 
-  external get_formats : converter -> format*format = "caml_gavl_vid_conv_get_formats"
+  external get_formats : t -> format*format = "caml_gavl_vid_conv_get_formats"
 
-  external get_quality : converter -> int = "caml_gavl_vid_conv_get_quality"
+  external get_quality : t -> int = "caml_gavl_vid_conv_get_quality"
 
-  external set_quality : converter -> int -> unit = "caml_gavl_vid_conv_set_quality"
+  external set_quality : t -> int -> unit = "caml_gavl_vid_conv_set_quality"
 
   type int_rect = int*int*int*int 
 
   type float_rect = float*float*float*float
 
-  external get_rect : converter -> float_rect*int_rect = "caml_gavl_vid_conv_get_rectangle"
+  external get_rect : t -> float_rect*int_rect = "caml_gavl_vid_conv_get_rectangle"
 
-  external set_rect : converter -> float_rect -> int_rect -> unit = "caml_gavl_vid_conv_set_rectangle"
+  external set_rect : t -> float_rect -> int_rect -> unit = "caml_gavl_vid_conv_set_rectangle"
 
   type conversion_flags = [
     | `Force_deinterlace
@@ -244,12 +275,12 @@ struct
     in
     List.fold_left f 0 l 
 
-  external set_flags : converter -> int -> unit = "caml_gavl_vid_conv_set_flags"
+  external set_flags : t -> int -> unit = "caml_gavl_vid_conv_set_flags"
 
   let set_flags c l = 
     set_flags c (flags_of_conversion_flags l)
 
-  external get_flags : converter -> int = "caml_gavl_vid_conv_get_flags"
+  external get_flags : t -> int = "caml_gavl_vid_conv_get_flags"
 
   let get_flags c = 
     let ret = get_flags c in
@@ -285,12 +316,12 @@ struct
       | Cubic_catmull -> int_of_define "GAVL_SCALE_CUBIC_CATMULL"
       | Scale_sinc_lanczos -> int_of_define "GAVL_SCALE_SINC_LANCZOS"
 
-  external set_scale_mode : converter -> int -> unit = "caml_gavl_vid_conv_set_scale_mode"
+  external set_scale_mode : t -> int -> unit = "caml_gavl_vid_conv_set_scale_mode"
 
   let set_scale_mode c m = 
     set_scale_mode c (int_of_scale_mode m)
 
-  external get_scale_mode : converter -> int = "caml_gavl_vid_conv_get_scale_mode"
+  external get_scale_mode : t -> int = "caml_gavl_vid_conv_get_scale_mode"
 
   exception Internal of scale_mode
 
@@ -311,9 +342,9 @@ struct
     with
       | Internal m -> m
 
-  external reinit : converter -> unit = "caml_gavl_vid_conv_reinit"
+  external reinit : t -> unit = "caml_gavl_vid_conv_reinit"
 
-  external convert : converter -> frame -> frame -> unit = "caml_gavl_vid_conv_convert" "noalloc"
+  external convert : t -> frame -> frame -> unit = "caml_gavl_vid_conv_convert" "noalloc"
 
 end
 

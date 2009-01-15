@@ -95,8 +95,15 @@ PKG_PROG_PKG_CONFIG()
 #PKG_CHECK_MODULES(gavl, gavl, , [AC_MSG_ERROR(gavl not found.)])
 
 # PKG_CHECK_MODULES loses when you need --libs-only-[lL]
+AC_MSG_CHECKING([for gavl >= 1.0.1])
 if ! $PKG_CONFIG --exists gavl; then
         AC_MSG_ERROR([gavl not found])
+else
+  if ! $PKG_CONFIG --atleast-version=1.0.1 gavl; then
+        AC_MSG_ERROR([gavl version should be at least 1.0.1])
+  else
+        AC_MSG_RESULT([ok])
+  fi
 fi
 gavl_CFLAGS=`$PKG_CONFIG --cflags gavl`
 AC_SUBST([gavl_CFLAGS])

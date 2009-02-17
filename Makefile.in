@@ -5,7 +5,7 @@ DISTFILES := CHANGES COPYING Makefile.in README \
 	bootstrap configure configure.ac \
 	src/*.ml src/*.mli src/*.c src/Makefile.in src/META.in \
 	src/OCamlMakefile \
-	examples/*.ml examples/Makefile examples/OCamlMakefile
+	examples/*.ml examples/Makefile* examples/OCamlMakefile
 VERSION = @VERSION@
 
 all clean install uninstall:

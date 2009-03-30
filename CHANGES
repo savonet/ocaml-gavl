@@ -1,6 +1,7 @@
-0.1.1 ()
+0.1.1 (03-03-2009)
 =====
 * Fixed Makefile for BSD: call $(MAKE) for generating documentation.
+* Fixed COPYING file.
 
 0.1.0 (17-02-2009)
 =====

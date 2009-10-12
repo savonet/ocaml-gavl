@@ -1,6 +1,5 @@
-0.1.2 ()
+0.1.2 (12-10-2009)
 =====
-* Added support for --enable-debugging configure option
 * Added support for --enable-debugging configure option
 * Added NO_CUSTOM to build
   in standard mode.

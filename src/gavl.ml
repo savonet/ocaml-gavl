@@ -344,7 +344,7 @@ struct
 
   external reinit : t -> unit = "caml_gavl_vid_conv_reinit"
 
-  external convert : t -> frame -> frame -> unit = "caml_gavl_vid_conv_convert" "noalloc"
+  external convert : t -> frame -> frame -> unit = "caml_gavl_vid_conv_convert"
 
 end
 

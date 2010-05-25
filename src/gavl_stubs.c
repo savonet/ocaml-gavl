@@ -338,7 +338,7 @@ static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_vid
     f->planes[i]  = malloc(caml_gavl_plane_size(vf,i,len));
     f->strides[i] = len;
     if (f->planes[i] == NULL)
-      caml_failwith("malloc");
+      caml_raise_out_of_memory();
   }
   f->user_data = NULL;
   f->timestamp = 0;
@@ -450,7 +450,7 @@ CAMLprim value caml_gavl_vid_conv_create(value old, value new)
   int pass;
   vid_conv_t *conv = malloc(sizeof(vid_conv_t));
   if (conv == NULL) 
-    caml_failwith("malloc");
+    caml_raise_out_of_memory();
 
   conv->conv = gavl_video_converter_create();
   if (conv->conv == NULL)

@@ -1,3 +1,8 @@
+0.1.3 ()
+=====
+* Fixed gc interaction with 
+  the convert function.
+
 0.1.2 (12-10-2009)
 =====
 * Added support for --enable-debugging configure option

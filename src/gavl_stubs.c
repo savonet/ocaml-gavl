@@ -502,6 +502,7 @@ CAMLprim value caml_gavl_vid_conv_get_formats(value conv)
 
 CAMLprim value caml_gavl_vid_conv_convert(value conv, value old, value new) 
 {
+  CAMLparam3(conv,old,new);
   vid_conv_t *vid_conv = Vid_conv_val(conv);
 
   /* pass < 0 should not happen since it 
@@ -532,7 +533,7 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old, value new)
   caml_remove_global_root(&new);
   caml_remove_global_root(&conv);
 
-  return Val_unit;
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value caml_gavl_vid_conv_new_frame(value format)

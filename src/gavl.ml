@@ -23,13 +23,11 @@ struct
 
   exception Invalid_frame
   exception Invalid_conversion
-  exception No_conversion_needed
   exception Not_implemented
 
   let _ = 
     Callback.register_exception "caml_gavl_invalid_frame" Invalid_frame;
-    Callback.register_exception "caml_gavl_invalid_conversion" Invalid_conversion;
-    Callback.register_exception "caml_gavl_no_conversion_needed" No_conversion_needed
+    Callback.register_exception "caml_gavl_invalid_conversion" Invalid_conversion
 
   type interlace_mode = 
    | No_interlace (* Progressive *) 

@@ -29,10 +29,6 @@ sig
   exception Invalid_frame
   exception Invalid_conversion
 
-  (** Raised when input frame doesn't need 
-    * conversion and can be used directly. *)
-  exception No_conversion_needed
- 
   (** Raised when a feature is not yet implemented,
     * in particular pixel format with data other than
     * unsigned 8 bit integers. *)
@@ -215,7 +211,7 @@ sig
     * corresponding format.
     * 
     * Raises [Not_implemented] if input or output format
-    * do not use unsigned 8 bit integers. *)
+    * do not use unsigned 8 bit integers. *) 
   val convert : t -> frame -> frame -> unit
 
 end

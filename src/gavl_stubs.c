@@ -484,7 +484,9 @@ CAMLprim value caml_gavl_vid_conv_init(value conv, value old, value new)
 
   if (pass == -1)
     caml_raise_constant(*caml_named_value("caml_gavl_invalid_conversion"));
-  
+
+  vid_conv->pass = pass; 
+ 
   CAMLreturn(Val_unit);
 }
 
@@ -516,22 +518,14 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old, value new)
   gavl_video_frame_of_value(old,&vid_conv->in_vf,&inf);
   gavl_video_frame_of_value(new,&vid_conv->out_vf,&outf);
 
-  /* pass == 0 means no conversion is needed.. */ 
-  if (vid_conv->pass == 0)
-    caml_raise_constant(*caml_named_value("caml_gavl_no_conversion_needed"));
-
-  caml_register_global_root(&old);
-  caml_register_global_root(&new);
-  caml_register_global_root(&conv);
-
   caml_enter_blocking_section();
-  for (j = 0; j < vid_conv->pass; j++)
-    gavl_video_convert(cnv,&inf,&outf);
+  /* pass == 0 means no conversion is needed.. */
+  if (vid_conv->pass == 0)
+    gavl_video_frame_copy(&vid_conv->in_vf,&outf,&inf);
+  else
+    for (j = 0; j < vid_conv->pass; j++)
+      gavl_video_convert(cnv,&inf,&outf);
   caml_leave_blocking_section();  
-
-  caml_remove_global_root(&old);
-  caml_remove_global_root(&new);
-  caml_remove_global_root(&conv);
 
   CAMLreturn(Val_unit);
 }
@@ -608,7 +602,13 @@ CAMLprim value caml_gavl_vid_conv_reinit(value conv)
 {
   CAMLparam1(conv);
   vid_conv_t *vid_conv = Vid_conv_val(conv);
-  gavl_video_converter_reinit(vid_conv->conv);
+  int pass = gavl_video_converter_reinit(vid_conv->conv);
+
+  if (pass == -1)
+    caml_raise_constant(*caml_named_value("caml_gavl_invalid_conversion"));
+
+  vid_conv->pass = pass ;
+
   CAMLreturn(Val_unit);
 }
 

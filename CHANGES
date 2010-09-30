@@ -1,3 +1,10 @@
+0.1.4 ()
+=====
+* Fixed stupid bug: pass variable
+  was not updated by init and reinit.
+* Copy frame content when no conversion is 
+  needed.
+
 0.1.3 (19-08-2010)
 =====
 * Fixed gc interaction with 

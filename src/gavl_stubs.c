@@ -36,6 +36,27 @@
 #define ALIGNMENT_BYTES 16
 #define roundup(x) ((((x) - 1) / ALIGNMENT_BYTES + 1) * ALIGNMENT_BYTES)
 
+static inline int caml_gavl_video_frame_is_aligned(gavl_video_frame_t *vf, int planes)
+{
+  int i;
+
+  for (i = 0; i < planes; i++)
+  {
+    if (((long)vf->planes[i] % ALIGNMENT_BYTES != 0))
+      return 0;
+    if (((long)vf->strides[i] % ALIGNMENT_BYTES != 0))
+      return 0;
+  }
+
+  return 1;
+}
+
+static inline int caml_gavl_num_planes(gavl_video_format_t *vf)
+{
+  gavl_pixelformat_t pf = vf->pixelformat;
+  return gavl_pixelformat_num_planes(pf);
+}
+
 CAMLprim value caml_gavl_vid_int_of_define(value d)
 {
   CAMLparam1(d);
@@ -334,7 +355,7 @@ static inline int caml_gavl_plane_size(gavl_video_format_t *format, int plane, i
 
 static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_video_format_t *vf)
 {
-  int p = gavl_pixelformat_num_planes (vf->pixelformat);
+  int p = caml_gavl_num_planes(vf);
   int i,len;
   for (i = 0; i < p; i++)
   {
@@ -359,9 +380,8 @@ static gavl_video_frame_t *gavl_video_frame_of_value(value v, gavl_video_format_
   int j,len,stride;
   struct caml_ba_array *data;
   value tmp,plane;
-  gavl_pixelformat_t pf = vf->pixelformat;
   value planes = Field(v, i++);
-  int np = gavl_pixelformat_num_planes(pf);
+  int np = caml_gavl_num_planes(vf);
   if (np != Wosize_val(planes))
     caml_raise_constant(*caml_named_value("caml_gavl_invalid_frame"));
 
@@ -396,8 +416,7 @@ static value value_of_gavl_video_frame(gavl_video_format_t *vf, gavl_video_frame
   int i = 0;
   int j;
   intnat len;
-  gavl_pixelformat_t pf = vf->pixelformat;
-  int np = gavl_pixelformat_num_planes(pf);
+  int np = caml_gavl_num_planes(vf);
   planes = caml_alloc_tuple(np);
   for (j = 0; j < np; j++)
   {
@@ -517,19 +536,50 @@ CAMLprim value caml_gavl_vid_conv_convert(value conv, value old, value new)
 
   gavl_video_converter_t *cnv = vid_conv->conv;
   gavl_video_frame_t inf;
+  gavl_video_frame_t *inft;
+  int in_al = 1;
+
   gavl_video_frame_t outf;
+  gavl_video_frame_t *outft;
+  int out_al = 1;
+
   int j;
+
   gavl_video_frame_of_value(old,&vid_conv->in_vf,&inf);
+  if (caml_gavl_video_frame_is_aligned(&inf,caml_gavl_num_planes(&vid_conv->in_vf)) == 0)
+  {
+    inft = gavl_video_frame_create(&vid_conv->in_vf);
+    gavl_video_frame_copy(&vid_conv->in_vf,inft,&inf);
+    in_al = 0;
+  } else
+    inft = &inf;
+
   gavl_video_frame_of_value(new,&vid_conv->out_vf,&outf);
+  if (caml_gavl_video_frame_is_aligned(&outf,caml_gavl_num_planes(&vid_conv->out_vf)) == 0)
+  {
+    outft = gavl_video_frame_create(&vid_conv->out_vf);
+    gavl_video_frame_copy(&vid_conv->out_vf,outft,&outf);
+    out_al = 0;
+  } else
+    outft = &outf;
 
   caml_enter_blocking_section();
   /* pass == 0 means no conversion is needed.. */
   if (vid_conv->pass == 0)
-    gavl_video_frame_copy(&vid_conv->in_vf,&outf,&inf);
+    gavl_video_frame_copy(&vid_conv->in_vf,&outf,inft);
   else
+  {
     for (j = 0; j < vid_conv->pass; j++)
-      gavl_video_convert(cnv,&inf,&outf);
+      gavl_video_convert(cnv,inft,outft);
+    if (out_al == 0)
+      gavl_video_frame_copy(&vid_conv->out_vf,&outf,outft);
+  }
   caml_leave_blocking_section();  
+
+  if (in_al == 0)
+    gavl_video_frame_destroy(inft);
+  if (out_al == 0)
+    gavl_video_frame_destroy(outft);
 
   CAMLreturn(Val_unit);
 }

@@ -32,6 +32,10 @@
 
 /* Video conversion */
 
+// Round to 16 bytes..
+#define ALIGNMENT_BYTES 16
+#define roundup(x) ((((x) - 1) / ALIGNMENT_BYTES + 1) * ALIGNMENT_BYTES)
+
 CAMLprim value caml_gavl_vid_int_of_define(value d)
 {
   CAMLparam1(d);
@@ -334,8 +338,8 @@ static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_vid
   int i,len;
   for (i = 0; i < p; i++)
   {
-    len = caml_gavl_bytes_per_line(vf,i);
-    f->planes[i]  = malloc(caml_gavl_plane_size(vf,i,len));
+    len = roundup(caml_gavl_bytes_per_line(vf,i));
+    f->planes[i]  = malloc(roundup(caml_gavl_plane_size(vf,i,len)));
     f->strides[i] = len;
     if (f->planes[i] == NULL)
       caml_raise_out_of_memory();

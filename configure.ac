@@ -89,6 +89,13 @@ if test "$OCAMLDEP" = no ; then
 	AC_MSG_ERROR(Cannot find ocamldep.)
 fi
 
+# Include a config.h
+AC_CONFIG_HEADERS([config.h:config.h.in])
+# Include it
+CFLAGS="$CFLAGS -I`pwd`/`dirname $0`"
+
+AC_CHECK_FUNCS([memalign])
+
 AC_PATH_PROG(OCAMLDOC,ocamldoc,no)
 
 AC_ARG_ENABLE([debugging],

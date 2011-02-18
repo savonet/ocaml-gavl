@@ -30,11 +30,20 @@
 #include <assert.h>
 #include <gavl/gavl.h>
 
+#include "config.h"
+
 /* Video conversion */
 
-// Round to 16 bytes..
+#ifdef HAVE_MEMALIGN
+/* some systems have memalign() but no declaration for it */
+void * memalign (size_t align, size_t size);
+#else
+/* assume malloc alignment is sufficient */
+#define memalign(align,size) malloc (size)
+#endif
+
 #define ALIGNMENT_BYTES 16
-#define roundup(x) ((((x) - 1) / ALIGNMENT_BYTES + 1) * ALIGNMENT_BYTES)
+#define ALIGN(a) a=((a+ALIGNMENT_BYTES-1)/ALIGNMENT_BYTES)*ALIGNMENT_BYTES
 
 static inline int caml_gavl_video_frame_is_aligned(gavl_video_frame_t *vf, int planes)
 {
@@ -359,8 +368,9 @@ static gavl_video_frame_t *caml_gavl_alloc_frame(gavl_video_frame_t *f, gavl_vid
   int i,len;
   for (i = 0; i < p; i++)
   {
-    len = roundup(caml_gavl_bytes_per_line(vf,i));
-    f->planes[i]  = malloc(roundup(caml_gavl_plane_size(vf,i,len)));
+    len = caml_gavl_bytes_per_line(vf,i);
+    ALIGN(len);
+    f->planes[i]  = memalign(ALIGNMENT_BYTES,caml_gavl_plane_size(vf,i,len));
     f->strides[i] = len;
     if (f->planes[i] == NULL)
       caml_raise_out_of_memory();

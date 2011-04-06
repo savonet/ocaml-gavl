@@ -24,6 +24,7 @@ AC_CHECK_FUNCS([memalign])
 
 AC_PROG_CC()
 AC_CHECK_TOOL([AR],[ar],no)
+AC_SUBST(AR)
 PKG_PROG_PKG_CONFIG()
 #PKG_CHECK_MODULES(gavl, gavl, , [AC_MSG_ERROR(gavl not found.)])
 

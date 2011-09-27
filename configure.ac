@@ -1,24 +1,16 @@
 
 # check for one particular file of the sources 
-AC_INIT(ocaml-gavl, 0.1.4, savonet-users@lists.sourceforge.net)
+AC_INIT([ocaml-gavl],[0.1.4],[savonet-users@lists.sourceforge.net])
 
 VERSION=$PACKAGE_VERSION
 AC_MSG_RESULT([configuring $PACKAGE_STRING])
 
-# Add prefix to compilation variables
-# if passed
-if test "x$prefix" != "xNONE"; then
-	CFLAGS="$CFLAGS -I$prefix/include"
-	LDFLAGS="$LDFLAGS -L$prefix/lib"
-	CPPFLAGS="$CPPFLAGS -I$prefix/include"
-fi
-
-AC_CHECK_OCAML_COMPILERS()
+AC_BASE_CHECKS()
 
 # Include a config.h
 AC_CONFIG_HEADERS([config.h:config.h.in])
 # Include it
-CFLAGS="$CFLAGS -I`pwd`/`dirname $0`"
+CFLAGS="$CFLAGS -I.."
 
 AC_CHECK_FUNCS([memalign])
 

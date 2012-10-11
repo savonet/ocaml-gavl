@@ -133,6 +133,9 @@ sig
   (** Create a new frame. *)
   val new_frame : format -> frame
 
+  (** Clear a frame. *)
+  val clear_frame : format -> frame -> unit
+
   (** Opaque type for a converter. *)
   type t
 
@@ -159,10 +162,10 @@ sig
   (** Set quality setting. *)
   val set_quality : t -> int -> unit
 
-  (** Type for integer rectangles. *)
+  (** Type for integer rectangles: x/y offset and width/height. *)
   type int_rect = int*int*int*int
 
-  (** Type for float rectangles. *)
+  (** Type for float rectangles: x/y offset and width/height. *)
   type float_rect = float*float*float*float
 
   (** [get_rect conv] returns a pair [(in_rect,out_rect)]. *)

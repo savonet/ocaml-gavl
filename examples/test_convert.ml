@@ -33,14 +33,15 @@ let rgb =
     interlace_mode   = No_interlace
   }
 
-
 let () =
+  let n = 100 in
   let inf  = new_frame yuv in
+  clear_frame yuv inf;
   let outf = new_frame rgb in
   let conv = create_converter yuv rgb in
-  Printf.printf "Converting 100 frames..\n"; flush_all ();
-  for i = 0 to 100 do
-    ignore(convert conv inf outf)
+  Printf.printf "Converting %d frames..\n" n; flush_all ();
+  for i = 0 to n do
+    ignore (convert conv inf outf)
   done;
   Gc.full_major ()
 

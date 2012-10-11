@@ -606,6 +606,17 @@ CAMLprim value caml_gavl_vid_conv_new_frame(value format)
   CAMLreturn(ret);
 }
 
+CAMLprim value caml_gavl_vid_conv_frame_clear(value format, value frame)
+{
+  CAMLparam2(frame, format);
+  gavl_video_format_t vf;
+  video_format_of_value(format,&vf);
+  gavl_video_frame_t f;
+  gavl_video_frame_of_value(frame, &vf, &f);
+  gavl_video_frame_clear(&f, &vf);
+  CAMLreturn(Val_unit);
+}
+
 static inline gavl_video_options_t *caml_gavl_vid_conv_opt(value conv)
 {
   vid_conv_t *vid_conv = Vid_conv_val(conv);

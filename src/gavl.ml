@@ -221,8 +221,10 @@ struct
   }
 
   external new_frame : internal_format -> frame = "caml_gavl_vid_conv_new_frame"
+  let new_frame fmt = new_frame (internal_format_of_format fmt)
 
-  let new_frame f = new_frame (internal_format_of_format f)
+  external clear_frame : internal_format -> frame -> unit = "caml_gavl_vid_conv_frame_clear"
+  let clear_frame fmt f = clear_frame (internal_format_of_format fmt) f
 
   type t
 

@@ -1,3 +1,8 @@
+0.1.5 (18-02-2013)
+=====
+* Bind clear_frame.
+* Updated configure.
+
 0.1.4 (12-05-2011)
 =====
 * Fixed stupid bug: pass variable

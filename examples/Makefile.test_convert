@@ -1,8 +1,7 @@
 SOURCES = test_convert.ml
 RESULT = test_convert
-INCDIRS = ../src 
-OCAMLC = /usr/bin/ocamlc -thread
-OCAMLOPT = /usr/bin/ocamlopt -thread
+INCDIRS = ../src
+THREADS = yes
 LIBS = bigarray gavl
 
 all: nc

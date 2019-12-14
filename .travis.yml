@@ -4,9 +4,10 @@ addons:
     packages:
     - ocaml-nox
     - ocaml-findlib
+    - libgavl-dev
 
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libgavl-dev
-
-script: ./bootstrap && ./configure && make && make -C examples
+script:
+  - ./bootstrap
+  - ./configure
+  - make
+  - make -C examples
